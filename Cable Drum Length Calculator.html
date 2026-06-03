@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cable Drum Length Calculator</title>
+
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+    background:white;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 0 15px rgba(0,0,0,0.1);
+}
+
+h1{
+    text-align:center;
+    color:#003366;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    margin-bottom:5px;
+    font-weight:bold;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:5px;
+    font-size:15px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    background:#0078D7;
+    color:white;
+    border:none;
+    border-radius:5px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#005eb8;
+}
+
+.result-box{
+    margin-top:25px;
+    padding:20px;
+    background:#f8fafc;
+    border-radius:8px;
+    border:1px solid #dbe3eb;
+}
+
+.result-item{
+    display:flex;
+    justify-content:space-between;
+    padding:8px 0;
+    border-bottom:1px solid #e5e5e5;
+}
+
+.result-item:last-child{
+    border-bottom:none;
+}
+
+.value{
+    font-weight:bold;
+    color:#006400;
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    color:#777;
+    font-size:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Cable Drum Length Calculator</h1>
+
+<div class="form-group">
+<label>Flange Diameter (mm)</label>
+<input type="number" id="flange" placeholder="Enter Flange Diameter">
+</div>
+
+<div class="form-group">
+<label>Barrel Diameter (mm)</label>
+<input type="number" id="barrel" placeholder="Enter Barrel Diameter">
+</div>
+
+<div class="form-group">
+<label>Traverse Width (mm)</label>
+<input type="number" id="traverse" placeholder="Enter Traverse Width">
+</div>
+
+<div class="form-group">
+<label>Cable Overall Diameter (mm)</label>
+<input type="number" step="0.01" id="od" placeholder="Enter Cable OD">
+</div>
+
+<button onclick="calculateLength()">Calculate Length</button>
+
+<div id="result" class="result-box" style="display:none;">
+
+<h3>Results</h3>
+
+<div class="result-item">
+<span>No. of Layers</span>
+<span class="value" id="layers"></span>
+</div>
+
+<div class="result-item">
+<span>Turns Per Layer</span>
+<span class="value" id="turns"></span>
+</div>
+
+<div class="result-item">
+<span>Calculated Length</span>
+<span class="value" id="length"></span>
+</div>
+
+<div class="result-item">
+<span>Recommended Length (Min)</span>
+<span class="value" id="minLength"></span>
+</div>
+
+<div class="result-item">
+<span>Recommended Length (Max)</span>
+<span class="value" id="maxLength"></span>
+</div>
+
+</div>
+
+<div class="footer">
+Cable Drum Planning Tool © 2026 | Developed By Er. Rohan Singh
+</div>
+
+</div>
+
+<script>
+
+function calculateLength(){
+
+    let flange = parseFloat(document.getElementById("flange").value);
+    let barrel = parseFloat(document.getElementById("barrel").value);
+    let traverse = parseFloat(document.getElementById("traverse").value);
+    let od = parseFloat(document.getElementById("od").value);
+
+    if(isNaN(flange) || isNaN(barrel) || isNaN(traverse) || isNaN(od)){
+        alert("Please enter all values.");
+        return;
+    }
+
+    let layers = Math.floor((flange - barrel)/(2*od));
+    let turns = Math.floor(traverse/od);
+
+    let totalLengthMM = 0;
+
+    for(let i=0;i<layers;i++){
+
+        let avgDiameter = barrel + ((2*i)+1)*od;
+
+        let circumference = Math.PI * avgDiameter;
+
+        totalLengthMM += circumference * turns;
+    }
+
+    let totalLengthM = totalLengthMM/1000;
+
+    let recommendedMin = totalLengthM * 0.77; // -23%
+    let recommendedMax = totalLengthM * 0.87; // -13%
+
+    document.getElementById("layers").innerText = layers;
+    document.getElementById("turns").innerText = turns;
+    document.getElementById("length").innerText = totalLengthM.toFixed(2) + " m";
+    document.getElementById("minLength").innerText = recommendedMin.toFixed(2) + " m";
+    document.getElementById("maxLength").innerText = recommendedMax.toFixed(2) + " m";
+
+    document.getElementById("result").style.display="block";
+}
+
+</script>
+
+</body>
+</html>
